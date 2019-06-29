@@ -3,23 +3,48 @@ NumberNeurons = 10; %número de neurónios por camada
 
 Folder = 1;
 InicialCount = 0; %número da primeira imagem da pasta
-NumberImagesFolder = 0; %número da ultima imagemem cada pasta
+NumberImagesFolder = 0; %número da ultima imagem da pasta
+
+NumInputs = 10; %número de linhas estudadas em casa imagem
+
+TargetShape = zeros(1,4); %variável que transporta as formas de cada imagem
 
 %verifica qual o número de imagens em cada pasta
 switch Folder
     
-    case 1
-        NumberImagesFolder = 4;
-    case 2
-        NumberImagesFolder = 201;
-    case 3
+    case 1 %Formas_1
+        InicialCount = 0;
+        NumberImagesFolder = 3;
+        %Target Matrix é a matriz que guarda os dados relativos aos alvos
+        %em estudo
+        TargetMatrix = zeros(4, NumberImagesFolder - InicialCount + 1);
+        InputMatrix = zeros(NumInputs,NumberImagesFolder - InicialCount + 1); 
+        %cada coluna da matriz guarda NumInputs de 
+        %caracteres de cada imagem
+    
+    case 2 %Formas_2
+        InicialCount = 0;
+        NumberImagesFolder = 200;
+        %o *4 no TargetMatrix tem a ver com o número de pastas a autalizar
+        %será o número da imagem final - o número da imagems inicial * 4 
+        %pois é o número de pastas internas 
+        TargetMatrix = zeros(4, (NumberImagesFolder - InicialCount + 1) * 4);
+        InputMatrix = zeros(NumInputs, (NumberImagesFolder - InicialCount + 1) * 4); 
+        %cada coluna da matriz guarda NumInputs de 
+        %caracteres de cada imagem
+        
+    case 3 %Formas_3
         InicialCount = 201;
         NumberImagesFolder = 250;
-    
+        TargetMatrix = zeros(4, (NumberImagesFolder - InicialCount + 1) * 4);
+        InputMatrix = zeros(NumInputs, (NumberImagesFolder - InicialCount + 1) * 4); 
+        %cada coluna da matriz guarda NumInputs de 
+        %caracteres de cada imagem
+        
 end
 
 %Conversão das imagens em Formas_1 em matrizes binárias
-for i = 1:NumberImagesFolder
+for i = InicialCount:NumberImagesFolder
 
     ImageName = '';
     
@@ -28,12 +53,12 @@ for i = 1:NumberImagesFolder
        
         case 1 %Formas_1
             
-            ImageName = sprintf('Formas_1\\%d.png', i - 1);
+            ImageName = sprintf('Formas_1\\%d.png', i);
             Img = imread(ImageName);
             
             %como não têm algo que as possa distinguir para dizer que 
             %forma tem de se usar este switch
-            switch i
+            switch (i + 1)
                
                 case 1 %circulo
                     %TargetShape é uma variável que diz qual a forma do
@@ -49,6 +74,31 @@ for i = 1:NumberImagesFolder
                 case 4 %triângulo
                     TargetShape = [0;0;0;1];
                     
+            end
+            
+            %colocação da TargetShape na TargetMatrix
+            TargetMatrix(:,(i - InicialCount + 1)) = TargetShape;
+            
+            [Num_Row, Num_Column] = size(Img);
+            
+            for h = 1 : NumInputs %vai correr o número de linhas para preencher a matriz com pontos da imagem
+               
+                for j = (((Num_Row/NumInputs)*(h-1))+1) : ((Num_Row/NumInputs)*(h))
+                
+                    for k = 1 : Num_Column
+                        
+                        if (Img(j,k) == 0)
+                        
+                            %matriz que guarda toda a informação acerca das
+                            %formas em estudo
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
+                            
+                        end
+                            
+                    end
+                    
+                end
+                
             end
             
         case 2 %Formas_2
