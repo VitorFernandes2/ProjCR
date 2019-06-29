@@ -1,0 +1,62 @@
+NumberLayers = 1; %número de camadas de neurónios
+NumberNeurons = 10; %número de neurónios por camada
+
+Folder = 1;
+InicialCount = 0; %número da primeira imagem da pasta
+NumberImagesFolder = 0; %número da ultima imagem da pasta
+
+%verifica qual o número de imagens em cada pasta
+switch Folder
+    
+    case 1 %Formas_1
+        InicialCount = 0;
+        NumberImagesFolder = 3;
+    case 2 %Formas_2
+        InicialCount = 0;
+        NumberImagesFolder = 200;
+    case 3 %Formas_3
+        InicialCount = 201;
+        NumberImagesFolder = 250;
+    
+end
+
+%Conversão das imagens em Formas_1 em matrizes binárias
+for i = InicialCount:NumberImagesFolder
+
+    ImageName = '';
+    
+    %verifica qual a pasta que estamos a analisar
+    switch Folder
+       
+        case 1 %Formas_1
+            
+            ImageName = sprintf('Formas_1\\%d.png', i);
+            Img = imread(ImageName);
+            
+            %como não têm algo que as possa distinguir para dizer que 
+            %forma tem de se usar este switch
+            switch i
+               
+                case 1 %circulo
+                    %TargetShape é uma variável que diz qual a forma do
+                    %alvo em análise
+                    TargetShape = [1;0;0;0];
+                    
+                case 2 %retângulo
+                    TargetShape = [0;1;0;0];
+                    
+                case 3 %estrela
+                    TargetShape = [0;0;1;0];
+                    
+                case 4 %triângulo
+                    TargetShape = [0;0;0;1];
+                    
+            end
+            
+        case 2 %Formas_2
+            
+        case 3 %Formas_3
+            
+    end
+    
+end
