@@ -5,7 +5,7 @@ Folder = 1;
 InicialCount = 0; %número da primeira imagem da pasta
 NumberImagesFolder = 0; %número da ultima imagem da pasta
 
-NumInputs = 10; %número de linhas estudadas em casa imagem
+NumInputs = 10; %número de entradas para o estudo das imagens
 
 TargetShape = zeros(1,4); %variável que transporta as formas de cada imagem
 
@@ -79,6 +79,8 @@ for i = InicialCount:NumberImagesFolder
             %colocação da TargetShape na TargetMatrix
             TargetMatrix(:,(i - InicialCount + 1)) = TargetShape;
             
+            %preenche cada variável com o número de pixel de altura e
+            %largura
             [Num_Row, Num_Column] = size(Img);
             
             for h = 1 : NumInputs %vai correr o número de linhas para preencher a matriz com pontos da imagem
@@ -87,7 +89,7 @@ for i = InicialCount:NumberImagesFolder
                 
                     for k = 1 : Num_Column
                         
-                        if (Img(j,k) == 0)
+                        if Img(j,k) == 0
                         
                             %matriz que guarda toda a informação acerca das
                             %formas em estudo
@@ -102,6 +104,96 @@ for i = InicialCount:NumberImagesFolder
             end
             
         case 2 %Formas_2
+            
+            %nesta secção irão ser lidas 4 imagens 1 por por cada pasta,
+            %ou seja, vai ser lido um circulo, um 
+            
+            %imagens da pasta circulo
+            ImageName = sprintf('Formas_2\\circle\\%d.png', i);
+            Img = imread(ImageName);
+            
+            TargetShape = [1;0;0;0]; %Circulo
+            
+            %colocação da TargetShape na TargetMatrix
+            TargetMatrix(:,(i - InicialCount + 1)) = TargetShape;
+            
+            %preenche cada variável com o número de pixel de altura e
+            %largura
+            [Num_Row, Num_Column] = size(Img);
+            
+            for h = 1 : NumInputs %vai correr o número de linhas para preencher a matriz com pontos da imagem
+               
+                for j = (((Num_Row/NumInputs)*(h-1))+1) : ((Num_Row/NumInputs)*(h))
+                
+                    for k = 1 : Num_Column
+                        
+                        if Img(j,k) == 0
+                        
+                            %matriz que guarda toda a informação acerca das
+                            %formas em estudo
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
+                            
+                        end
+                            
+                    end
+                    
+                end
+                
+            end
+                
+            %colocação da TargetShape na TargetMatrix
+            TargetMatrix(:,(i - InicialCount + 1)) = TargetShape;
+            
+            %preenche cada variável com o número de pixel de altura e
+            %largura
+            [Num_Row, Num_Column] = size(Img);
+            
+            for h = 1 : NumInputs %vai correr o número de linhas para preencher a matriz com pontos da imagem
+               
+                for j = (((Num_Row/NumInputs)*(h-1))+1) : ((Num_Row/NumInputs)*(h))
+                
+                    for k = 1 : Num_Column
+                        
+                        if Img(j,k) == 0
+                        
+                            %matriz que guarda toda a informação acerca das
+                            %formas em estudo
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
+                            
+                        end
+                            
+                    end
+                    
+                end
+                
+            end
+                
+            %colocação da TargetShape na TargetMatrix
+            TargetMatrix(:,(i - InicialCount + 1)) = TargetShape;
+            
+            %preenche cada variável com o número de pixel de altura e
+            %largura
+            [Num_Row, Num_Column] = size(Img);
+            
+            for h = 1 : NumInputs %vai correr o número de linhas para preencher a matriz com pontos da imagem
+               
+                for j = (((Num_Row/NumInputs)*(h-1))+1) : ((Num_Row/NumInputs)*(h))
+                
+                    for k = 1 : Num_Column
+                        
+                        if Img(j,k) == 0
+                        
+                            %matriz que guarda toda a informação acerca das
+                            %formas em estudo
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
+                            
+                        end
+                            
+                    end
+                    
+                end
+                
+            end
             
         case 3 %Formas_3
             
