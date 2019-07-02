@@ -382,3 +382,38 @@ for i = InicialCount:NumberImagesFolder
     end
     
 end
+
+%Matriz de simulação para 4 imagens em estudo
+SimulationMatrix = zeros(NumInputs, 4);
+
+for i=1:4
+   
+    %Lê as imagens
+    ImageName = sprintf('ImagensLeitura\\%d.png', i - 1);
+    Img = imread(ImageName);
+
+    %preenche cada variável com o número de pixel de altura e
+    %largura
+    [Num_Row, Num_Column] = size(Img);
+
+    for h = 1 : NumInputs %vai correr o número de linhas para preencher a matriz com pontos da imagem
+
+        for j = (((Num_Row/NumInputs)*(h-1))+1) : ((Num_Row/NumInputs)*(h))
+
+            for k = 1 : Num_Column
+
+                if Img(j,k) == 0
+
+                    %matriz que guarda toda a informação acerca das
+                    %formas em estudo
+                    SimulationMatrix(h,i) = SimulationMatrix(h,i) + k;
+
+                end
+
+            end
+
+        end
+
+    end
+    
+end
