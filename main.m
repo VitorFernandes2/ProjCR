@@ -105,6 +105,8 @@ for i = InicialCount:NumberImagesFolder
             
         case 2 %Formas_2
             
+            
+            
         case 3 %Formas_3
                         
     end
@@ -176,10 +178,11 @@ net.trainparam.epochs = 100;
 net.trainparam.goal = 0.0001;
 
 %Treinar
-%[net,tr] = train(net, irisInputs, irisTargets);
-net = train(net,SimulationMatrix,TargetMatrix);
+%treina com os dados de entrada e com a matriz de objectivos
+net = train(net,InputMatrix,TargetMatrix);
 
 % SIMULAR
+%simula a rede neuronal treinada com os novos dados de entrada
 out = sim(net, SimulationMatrix);
 
 disp(net);
