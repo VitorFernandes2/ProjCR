@@ -422,18 +422,18 @@ end
 
 
 % Normalização das matrizes
-% A=[InputMatrix,SimulationMatrix] ;
-% maxi=max(max(A));
-% mini=min(min(A));
-% [a,b]=size(A);
-% for i=1:a
-%     for j=1:b
-%         AN(i,j)=2*(A(i,j)/(maxi-mini))-1;
-%     end
-% end
-% 
-% InputMatrix=AN(:,1:InicialCount); % rever
-% SimulationMatrix=AN(:,1:NumberImagesFolder - InicialCount) ; % rever
+A=[InputMatrix,SimulationMatrix] ;
+maxi=max(max(A));
+mini=min(min(A));
+[a,b]=size(A);
+for i=1:a
+    for j=1:b
+        AN(i,j)=(A(i,j)/(maxi-mini));
+    end
+end
+
+InputMatrix=AN(:,1:InicialCount); % rever
+SimulationMatrix=AN(:,1:NumberImagesFolder - InicialCount + 1) ; % rever
 %fim da Normalização das matrizes
 
 %Criação da Rede Neuronal com 10 neurónios
