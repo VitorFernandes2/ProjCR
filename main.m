@@ -243,6 +243,142 @@ for i = InicialCount:NumberImagesFolder
             
         case 3 %Formas_3
             
+            %nesta secção irão ser lidas 4 imagens 1 por por cada pasta,
+            %ou seja, vai ser lido um circulo, um quadrado, uma estrela, e
+            %um triângulo
+            
+            %imagens da pasta circulo
+            ImageName = sprintf('Formas_3\\circle\\%d.png', i);
+            Img = imread(ImageName);
+            
+            TargetShape = [1;0;0;0]; %Circulo
+            
+            %colocação da TargetShape na TargetMatrix
+            TargetMatrix(:,(i - InicialCount + 1)) = TargetShape;
+            
+            %preenche cada variável com o número de pixel de altura e
+            %largura
+            [Num_Row, Num_Column] = size(Img);
+            
+            for h = 1 : NumInputs %vai correr o número de linhas para preencher a matriz com pontos da imagem
+               
+                for j = (((Num_Row/NumInputs)*(h-1))+1) : ((Num_Row/NumInputs)*(h))
+                
+                    for k = 1 : Num_Column
+                        
+                        if Img(j,k) == 0
+                        
+                            %matriz que guarda toda a informação acerca das
+                            %formas em estudo
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
+                            
+                        end
+                            
+                    end
+                    
+                end
+                
+            end
+            
+            %imagens da pasta square
+            ImageName = sprintf('Formas_3\\square\\%d.png', i);
+            Img = imread(ImageName);
+            
+            TargetShape = [0;1;0;0]; %Quadrado
+            
+            %colocação da TargetShape na TargetMatrix
+            TargetMatrix(:,(i - InicialCount + 1)) = TargetShape;
+            
+            %preenche cada variável com o número de pixel de altura e
+            %largura
+            [Num_Row, Num_Column] = size(Img);
+            
+            for h = 1 : NumInputs %vai correr o número de linhas para preencher a matriz com pontos da imagem
+               
+                for j = (((Num_Row/NumInputs)*(h-1))+1) : ((Num_Row/NumInputs)*(h))
+                
+                    for k = 1 : Num_Column
+                        
+                        if Img(j,k) == 0
+                        
+                            %matriz que guarda toda a informação acerca das
+                            %formas em estudo
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
+                            
+                        end
+                            
+                    end
+                    
+                end
+                
+            end
+              
+            %imagens da pasta star
+            ImageName = sprintf('Formas_3\\star\\%d.png', i);
+            Img = imread(ImageName);
+            
+            TargetShape = [0;0;1;0]; %Estrela
+            
+            %colocação da TargetShape na TargetMatrix
+            TargetMatrix(:,(i - InicialCount + 1)) = TargetShape;
+            
+            %preenche cada variável com o número de pixel de altura e
+            %largura
+            [Num_Row, Num_Column] = size(Img);
+            
+            for h = 1 : NumInputs %vai correr o número de linhas para preencher a matriz com pontos da imagem
+               
+                for j = (((Num_Row/NumInputs)*(h-1))+1) : ((Num_Row/NumInputs)*(h))
+                
+                    for k = 1 : Num_Column
+                        
+                        if Img(j,k) == 0
+                        
+                            %matriz que guarda toda a informação acerca das
+                            %formas em estudo
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
+                            
+                        end
+                            
+                    end
+                    
+                end
+                
+            end
+            
+            %imagens da pasta triangle
+            ImageName = sprintf('Formas_3\\triangle\\%d.png', i);
+            Img = imread(ImageName);
+            
+            TargetShape = [0;0;0;1]; %Triângulo
+            
+            %colocação da TargetShape na TargetMatrix
+            TargetMatrix(:,(i - InicialCount + 1)) = TargetShape;
+            
+            %preenche cada variável com o número de pixel de altura e
+            %largura
+            [Num_Row, Num_Column] = size(Img);
+            
+            for h = 1 : NumInputs %vai correr o número de linhas para preencher a matriz com pontos da imagem
+               
+                for j = (((Num_Row/NumInputs)*(h-1))+1) : ((Num_Row/NumInputs)*(h))
+                
+                    for k = 1 : Num_Column
+                        
+                        if Img(j,k) == 0
+                        
+                            %matriz que guarda toda a informação acerca das
+                            %formas em estudo
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
+                            
+                        end
+                            
+                    end
+                    
+                end
+                
+            end
+            
     end
     
 end
