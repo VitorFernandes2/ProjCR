@@ -420,6 +420,22 @@ end
 
 %Fazer Normalização de matrizes
 
+
+% Normalização das matrizes
+A=[InputMatrix,SimulationMatrix] ;
+maxi=max(max(A));
+mini=min(min(A));
+[a,b]=size(A);
+for i=1:a
+    for j=1:b
+        AN(i,j)=2*(A(i,j)/(maxi-mini))-1;
+    end
+end
+
+InputMatrix=AN(:,1:InicialCount); % rever
+SimulationMatrix=AN(:,1:NumberImagesFolder - InicialCount) ; % rever
+%fim da Normalização das matrizes
+
 %Criação da Rede Neuronal com 10 neurónios
 net = feedforwardnet(NumberNeurons);
 net.layers{1}.transferFcn = 'tansig';
