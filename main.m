@@ -1,7 +1,7 @@
 NumberLayers = 1; %número de camadas de neurónios
 NumberNeurons = 10; %número de neurónios por camada
 
-Folder = 2; %pasta que se quer estudar as imagens
+Folder = 1; %pasta que se quer estudar as imagens
 InicialCount = 0; %número da primeira imagem da pasta
 NumberImagesFolder = 0; %número da ultima imagem da pasta
 
@@ -422,18 +422,18 @@ end
 
 
 % Normalização das matrizes
-A=[InputMatrix,SimulationMatrix] ;
-maxi=max(max(A));
-mini=min(min(A));
-[a,b]=size(A);
-for i=1:a
-    for j=1:b
-        AN(i,j)=2*(A(i,j)/(maxi-mini))-1;
-    end
-end
-
-InputMatrix=AN(:,1:InicialCount); % rever
-SimulationMatrix=AN(:,1:NumberImagesFolder - InicialCount) ; % rever
+% A=[InputMatrix,SimulationMatrix] ;
+% maxi=max(max(A));
+% mini=min(min(A));
+% [a,b]=size(A);
+% for i=1:a
+%     for j=1:b
+%         AN(i,j)=2*(A(i,j)/(maxi-mini))-1;
+%     end
+% end
+% 
+% InputMatrix=AN(:,1:InicialCount); % rever
+% SimulationMatrix=AN(:,1:NumberImagesFolder - InicialCount) ; % rever
 %fim da Normalização das matrizes
 
 %Criação da Rede Neuronal com 10 neurónios
@@ -446,9 +446,10 @@ net.divideParam.testRatio = 0.15;
 
 %Treinar
 %[net,tr] = train(net, irisInputs, irisTargets);
-% = train(net,SimulationMatrix,TargetMatrix);
-%view(net);
-%disp(tr)
+net = train(net,SimulationMatrix,TargetMatrix);
 
 % SIMULAR
-%out = sim(net, irisInputs);
+out = sim(net, SimulationMatrix);
+
+disp(net);
+
