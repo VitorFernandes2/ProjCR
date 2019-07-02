@@ -1,3 +1,13 @@
+function main()
+
+clear all;
+close all;
+
+% Carrega o dataset
+load iris_dataset;
+load fisheriris;
+clear meas;
+
 NumberLayers = 1; %número de camadas de neurónios
 NumberNeurons = 10; %número de neurónios por camada
 
@@ -176,24 +186,30 @@ InputMatrix=AN(:,1:NumberImagesFolder - InicialCount + 1);
 SimulationMatrix=AN(:,1:NumberImagesFolder - InicialCount + 1);
 %fim da Normalização das matrizes
 
-%Criação da Rede Neuronal com 10 neurónios e função de treino default
-net = feedforwardnet(NumberNeurons,'trainlm');
+%Criação da Rede Neuronal com NumberNeurons neurónios
+net = feedforwardnet(NumberNeurons);
+net.trainFcn = 'trainc'; %Função de treino
 net.layers{1}.transferFcn = 'tansig'; %função de ativação
-%net.divideFcn = 'dividerand';
 
 %Segunda Meta
+%net.divideFcn = 'dividerand';
 % net.divideParam.trainRatio = 0.70;
 % net.divideParam.valRatio = 0.15;
 % net.divideParam.testRatio = 0.15;
 
-net = init(net);
-
 %Treinar
 %treina com os dados de entrada e com a matriz de objectivos
-net = train(net,InputMatrix,TargetMatrix);
+[net,tr] = train(net,InputMatrix,TargetMatrix);
+
+view(net);
+disp(tr)
 
 % SIMULAR
 %simula a rede neuronal treinada com os novos dados de entrada
 out = sim(net, SimulationMatrix);
 
-disp(net);
+%VISUALIZAR DESEMPENHO
+
+plotconfusion(TargetMatrix, out) % Matriz de confusao
+
+plotperf(tr)         % Grafico com o desempenho da rede nos 3 conjuntos  
