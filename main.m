@@ -9,7 +9,13 @@ NumInputs = 10; %número de entradas para o estudo das imagens
 
 TargetShape = zeros(1,4); %variável que transporta as formas de cada imagem
 
+
+%###############################################
+
 %verifica qual o número de imagens em cada pasta
+
+%###############################################
+
 switch Folder
     
     case 1 %Formas_1
@@ -43,7 +49,14 @@ switch Folder
         
 end
 
+
+%#######################################################
+
 %Conversão das imagens em Formas_1 em matrizes binárias
+
+%#######################################################
+
+
 for i = InicialCount:NumberImagesFolder
 
     ImageName = '';
@@ -93,7 +106,7 @@ for i = InicialCount:NumberImagesFolder
                         
                             %matriz que guarda toda a informação acerca das
                             %formas em estudo
-                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + 1;
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
                             
                         end
                             
@@ -136,7 +149,7 @@ for i=1:4
 
                     %matriz que guarda toda a informação acerca das
                     %formas em estudo
-                    SimulationMatrix(h,i) = SimulationMatrix(h,i) + 1;
+                    SimulationMatrix(h,i) = SimulationMatrix(h,i) + k;
 
                 end
 
@@ -147,9 +160,6 @@ for i=1:4
     end
     
 end
-
-%Fazer Normalização de matrizes
-
 
 % Normalização das matrizes
 A=[InputMatrix,SimulationMatrix] ;
@@ -162,20 +172,21 @@ for i=1:a
     end
 end
 
-InputMatrix=AN(:,1:NumberImagesFolder - InicialCount + 1); % rever
-SimulationMatrix=AN(:,1:NumberImagesFolder - InicialCount + 1) ; % rever
+InputMatrix=AN(:,1:NumberImagesFolder - InicialCount + 1);
+SimulationMatrix=AN(:,1:NumberImagesFolder - InicialCount + 1);
 %fim da Normalização das matrizes
 
-%Criação da Rede Neuronal com 10 neurónios
-net = feedforwardnet(NumberNeurons);
+%Criação da Rede Neuronal com 10 neurónios e função de treino default
+net = feedforwardnet(NumberNeurons,'trainlm');
+net.layers{1}.transferFcn = 'tansig'; %função de ativação
+%net.divideFcn = 'dividerand';
+
+%Segunda Meta
+% net.divideParam.trainRatio = 0.70;
+% net.divideParam.valRatio = 0.15;
+% net.divideParam.testRatio = 0.15;
+
 net = init(net);
-net.layers{1}.transferFcn = 'tansig';
-net.divideFcn = 'dividerand';
-net.divideParam.trainRatio = 0.70;
-net.divideParam.valRatio = 0.15;
-net.divideParam.testRatio = 0.15;
-net.trainparam.epochs = 100;
-net.trainparam.goal = 0.0001;
 
 %Treinar
 %treina com os dados de entrada e com a matriz de objectivos
@@ -186,4 +197,3 @@ net = train(net,InputMatrix,TargetMatrix);
 out = sim(net, SimulationMatrix);
 
 disp(net);
-
