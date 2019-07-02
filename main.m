@@ -449,7 +449,7 @@ net.trainparam.goal = 0.0001;
 
 %Treinar
 %[net,tr] = train(net, irisInputs, irisTargets);
-net = train(net,SimulationMatrix,InputMatrix);
+net = train(net,SimulationMatrix,TargetMatrix);
 
 % SIMULAR
 out = sim(net, SimulationMatrix);
