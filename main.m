@@ -417,3 +417,22 @@ for i=1:4
     end
     
 end
+
+%Fazer Normalização de matrizes
+
+%Criação da Rede Neuronal com 10 neurónios
+net = feedforwardnet(NumberNeurons);
+net.layers{1}.transferFcn = 'tansig';
+net.divideFcn = 'dividerand';
+net.divideParam.trainRatio = 0.70;
+net.divideParam.valRatio = 0.15;
+net.divideParam.testRatio = 0.15;
+
+%Treinar
+%[net,tr] = train(net, irisInputs, irisTargets);
+% = train(net,SimulationMatrix,TargetMatrix);
+%view(net);
+%disp(tr)
+
+% SIMULAR
+%out = sim(net, irisInputs);
