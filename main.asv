@@ -93,7 +93,7 @@ for i = InicialCount:NumberImagesFolder
                         
                             %matriz que guarda toda a informação acerca das
                             %formas em estudo
-                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + 1;
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
                             
                         end
                             
@@ -132,7 +132,7 @@ for i = InicialCount:NumberImagesFolder
                         
                             %matriz que guarda toda a informação acerca das
                             %formas em estudo
-                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + 1;
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
                             
                         end
                             
@@ -165,7 +165,7 @@ for i = InicialCount:NumberImagesFolder
                         
                             %matriz que guarda toda a informação acerca das
                             %formas em estudo
-                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + 1;
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
                             
                         end
                             
@@ -198,7 +198,7 @@ for i = InicialCount:NumberImagesFolder
                         
                             %matriz que guarda toda a informação acerca das
                             %formas em estudo
-                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + 1;
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
                             
                         end
                             
@@ -231,7 +231,7 @@ for i = InicialCount:NumberImagesFolder
                         
                             %matriz que guarda toda a informação acerca das
                             %formas em estudo
-                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + 1;
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
                             
                         end
                             
@@ -270,7 +270,7 @@ for i = InicialCount:NumberImagesFolder
                         
                             %matriz que guarda toda a informação acerca das
                             %formas em estudo
-                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + 1;
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
                             
                         end
                             
@@ -303,7 +303,7 @@ for i = InicialCount:NumberImagesFolder
                         
                             %matriz que guarda toda a informação acerca das
                             %formas em estudo
-                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + 1;
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
                             
                         end
                             
@@ -336,7 +336,7 @@ for i = InicialCount:NumberImagesFolder
                         
                             %matriz que guarda toda a informação acerca das
                             %formas em estudo
-                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + 1;
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
                             
                         end
                             
@@ -369,7 +369,7 @@ for i = InicialCount:NumberImagesFolder
                         
                             %matriz que guarda toda a informação acerca das
                             %formas em estudo
-                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + 1;
+                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
                             
                         end
                             
@@ -406,7 +406,7 @@ for i=1:4
 
                     %matriz que guarda toda a informação acerca das
                     %formas em estudo
-                    SimulationMatrix(h,i) = SimulationMatrix(h,i) + 1;
+                    SimulationMatrix(h,i) = SimulationMatrix(h,i) + k;
 
                 end
 
@@ -438,18 +438,17 @@ end
 
 %Criação da Rede Neuronal com 10 neurónios
 net = feedforwardnet(NumberNeurons);
-net = init(net);
 net.layers{1}.transferFcn = 'tansig';
 net.divideFcn = 'dividerand';
 net.divideParam.trainRatio = 0.70;
 net.divideParam.valRatio = 0.15;
 net.divideParam.testRatio = 0.15;
 net.trainparam.epochs = 250;
-net.trainparam.goal = 0.0001;
+net.trainparam.goal = 0.
 
 %Treinar
 %[net,tr] = train(net, irisInputs, irisTargets);
-net = train(net,SimulationMatrix,InputMatrix);
+net = train(net,SimulationMatrix,TargetMatrix);
 
 % SIMULAR
 out = sim(net, SimulationMatrix);
