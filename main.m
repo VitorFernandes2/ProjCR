@@ -4,7 +4,7 @@ clc;
 NumberLayers = 1; %número de camadas de neurónios
 NumberNeurons = 10; %número de neurónios por camada
 
-Folder = 3; %pasta que se quer estudar as imagens
+Folder = 1; %pasta que se quer estudar as imagens
 InicialCount = 0; %número da primeira imagem da pasta
 NumberImagesFolder = 0; %número da ultima imagem da pasta
 
@@ -172,12 +172,20 @@ net.divideParam.valRatio = 0.15;
 net.divideParam.testRatio = 0.15;
 %}
 
+
+
 %Treinar
 %treina com os dados de entrada e com a matriz de objectivos
+
 [net,tr] = train(net,inputmatrix,outputmatrix);
 
 view(net);
 disp(tr)
+
+%{
+save -> save net
+load -> load net
+%}
 
 % SIMULAR
 %simula a rede neuronal treinada com os novos dados de entrada
