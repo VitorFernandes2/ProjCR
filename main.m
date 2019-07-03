@@ -1,14 +1,6 @@
 function main()
 
 clc;
-clear all;
-close all;
-
-% Carrega o dataset
-load iris_dataset;
-load fisheriris;
-clear meas;
-
 NumberLayers = 1; %número de camadas de neurónios
 NumberNeurons = 10; %número de neurónios por camada
 
@@ -34,29 +26,12 @@ switch Folder
         NumberImagesFolder = 3;
         %Target Matrix é a matriz que guarda os dados relativos aos alvos
         %em estudo
-        TargetMatrix = zeros(4, NumberImagesFolder - InicialCount + 1);
-        InputMatrix = zeros(NumInputs,NumberImagesFolder - InicialCount + 1); 
-        %cada coluna da matriz guarda NumInputs de 
-        %caracteres de cada imagem
     
     case 2 %Formas_2
-        InicialCount = 0;
-        NumberImagesFolder = 200;
-        %o *4 no TargetMatrix tem a ver com o número de pastas a autalizar
-        %será o número da imagem final - o número da imagems inicial * 4 
-        %pois é o número de pastas internas 
-        TargetMatrix = zeros(4, (NumberImagesFolder - InicialCount + 1) * 4);
-        InputMatrix = zeros(NumInputs, (NumberImagesFolder - InicialCount + 1) * 4); 
-        %cada coluna da matriz guarda NumInputs de 
-        %caracteres de cada imagem
+
         
     case 3 %Formas_3
-        InicialCount = 201;
-        NumberImagesFolder = 250;
-        TargetMatrix = zeros(4, (NumberImagesFolder - InicialCount + 1) * 4);
-        InputMatrix = zeros(NumInputs, (NumberImagesFolder - InicialCount + 1) * 4); 
-        %cada coluna da matriz guarda NumInputs de 
-        %caracteres de cada imagem
+
         
 end
 
@@ -67,8 +42,9 @@ end
 
 %#######################################################
 
-
-for i = InicialCount:NumberImagesFolder
+outputmatrix= zeros(4,4);
+            
+ for i = InicialCount:NumberImagesFolder
 
     ImageName = '';
     
@@ -79,135 +55,62 @@ for i = InicialCount:NumberImagesFolder
             
             ImageName = sprintf('Formas_1\\%d.png', i);
             Img = imread(ImageName);
+            Img = imbinarize(Img);
+            inputmatrix(1:40000,i+1)=Img(:); % input <- mudar o nome
+                      
+            outputmatrix(i+1,i+1)=1;
             
-            %como não têm algo que as possa distinguir para dizer que 
-            %forma tem de se usar este switch
-            switch (i + 1)
-               
-                case 1 %circulo
-                    %TargetShape é uma variável que diz qual a forma do
-                    %alvo em análise
-                    TargetShape = [1;0;0;0];
-                    
-                case 2 %retângulo
-                    TargetShape = [0;1;0;0];
-                    
-                case 3 %estrela
-                    TargetShape = [0;0;1;0];
-                    
-                case 4 %triângulo
-                    TargetShape = [0;0;0;1];
-                    
-            end
-            
-            %colocação da TargetShape na TargetMatrix
-            TargetMatrix(:,(i - InicialCount + 1)) = TargetShape;
-            
-            %preenche cada variável com o número de pixel de altura e
-            %largura
-            [Num_Row, Num_Column] = size(Img);
-            
-            for h = 1 : NumInputs %vai correr o número de linhas para preencher a matriz com pontos da imagem
-               
-                for j = (((Num_Row/NumInputs)*(h-1))+1) : ((Num_Row/NumInputs)*(h))
-                
-                    for k = 1 : Num_Column
-                        
-                        if Img(j,k) == 0
-                        
-                            %matriz que guarda toda a informação acerca das
-                            %formas em estudo
-                            InputMatrix(h,(i - InicialCount + 1)) = InputMatrix(h,(i - InicialCount + 1)) + k;
-                            
-                        end
-                            
-                    end
-                    
-                end
-                
-            end
+            % https://www.mathworks.com/matlabcentral/answers/196072-how-to-read-all-the-images-in-a-folder
+            % -> rever
             
         case 2 %Formas_2
-            
-            
             
         case 3 %Formas_3
                         
     end
     
-end
-
-%Matriz de simulação para 4 imagens em estudo
-SimulationMatrix = zeros(NumInputs, 4);
-
-for i=1:4
-   
-    %Lê as imagens
-    ImageName = sprintf('ImagensLeitura\\%d.png', i - 1);
-    Img = imread(ImageName);
-
-    %preenche cada variável com o número de pixel de altura e
-    %largura
-    [Num_Row, Num_Column] = size(Img);
-
-    for h = 1 : NumInputs %vai correr o número de linhas para preencher a matriz com pontos da imagem
-
-        for j = (((Num_Row/NumInputs)*(h-1))+1) : ((Num_Row/NumInputs)*(h))
-
-            for k = 1 : Num_Column
-
-                if Img(j,k) == 0
-
-                    %matriz que guarda toda a informação acerca das
-                    %formas em estudo
-                    SimulationMatrix(h,i) = SimulationMatrix(h,i) + k;
-
-                end
-
-            end
-
-        end
-
-    end
-    
-end
-
-% Normalização das matrizes
-A=[InputMatrix,SimulationMatrix] ;
-maxi=max(max(A));
-mini=min(min(A));
-[a,b]=size(A);
-for i=1:a
-    for j=1:b
-        AN(i,j)=(A(i,j)/(maxi-mini));
-    end
-end
-
-InputMatrix=AN(:,1:NumberImagesFolder - InicialCount + 1);
-SimulationMatrix=AN(:,1:NumberImagesFolder - InicialCount + 1);
-%fim da Normalização das matrizes
-
-%Criação da Rede Neuronal com NumberNeurons neurónios
+ end
+%{
 net = feedforwardnet(NumberNeurons);
+net.divideFcn = '';
 net.trainFcn = 'trainc'; %Função de treino
 net.layers{1}.transferFcn = 'tansig'; %função de ativação
+%}
 
 %Segunda Meta
 %net.divideFcn = 'dividerand';
 % net.divideParam.trainRatio = 0.70;
 % net.divideParam.valRatio = 0.15;
 % net.divideParam.testRatio = 0.15;
+ 
+%Criação da Rede Neuronal com NumberNeurons neurónios
+
+net = feedforwardnet(NumberNeurons);
+net.layers{1}.transferFcn = 'tansig';
+%net.layers{2}.transferFcn = 'tansig';
+
+net.trainFcn = 'trainscg';
+
+%net.divideFcn = ''; topico A
+
+% topico B \/
+
+net.divideFcn = 'dividerand';
+net.divideParam.trainRatio = 0.7;
+net.divideParam.valRatio = 0.15;
+net.divideParam.testRatio = 0.15;
+
 
 %Treinar
 %treina com os dados de entrada e com a matriz de objectivos
-[net,tr] = train(net,InputMatrix,TargetMatrix);
+[net,tr] = train(net,inputmatrix,outputmatrix);
 
 view(net);
 disp(tr)
 
 % SIMULAR
 %simula a rede neuronal treinada com os novos dados de entrada
-out = sim(net, InputMatrix);
+out = sim(net, SimulationMatrix);
 
 %VISUALIZAR DESEMPENHO
 
