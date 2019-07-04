@@ -303,6 +303,7 @@ end
 
 setappdata(0,'sharedinputmatrix',inputmatrix);
 setappdata(0,'sharedoutputmatrix',outputmatrix);
+setappdata(0,'sharedRecizevalue',Recizevalue);
 
 set(handles.createnetconfirm, 'string', 'Rede preparada');
 
@@ -347,6 +348,37 @@ function drawimg_Callback(hObject, eventdata, handles)
 % hObject    handle to drawimg (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+Numimagenscomp = 4; % TEMPPP -> numero de imagens lidas pra comparar -> definido para as 4 de imagensleitura
+Recizevalue = getappdata(0,'sharedRecizevalue');
+if(isempty(Recizevalue))
+    infRecize = get(handles.redimopcion, 'Value');
+    switch infRecize
+        case 1
+            Recizevalue = 2; % 1 se normal, 2 se recized pra 20x20 (aumenta significativamente a velocidade e tirar bugs de ram)
+        case 2
+            Recizevalue = 1; % 1 se normal, 2 se recized pra 20x20 (aumenta significativamente a velocidade e tirar bugs de ram)
+    end
+end
+
+for i=1:Numimagenscomp
+   
+    ImageName = sprintf('ImagensLeitura\\%d.png', i - 1);
+    Img = imread(ImageName);
+    Img = imbinarize(Img);
+    
+    if Recizevalue == 2
+        Img = imresize(Img, 0.1); % temp
+        SimulationMatrix(1:400,i)=Img(:); % matrix onde esta os objetos q serão testados
+    else
+        SimulationMatrix(1:40000,i)=Img(:); % matrix onde esta os objetos q serão testados
+    end 
+
+
+end
+setappdata(0,'sharedSimulationMatrix',SimulationMatrix);
+
+set(handles.statusimg, 'string', 'Ims default carregadas');
 
 
 % --- Executes on button press in runbtn.
@@ -479,6 +511,39 @@ function treinstart_Callback(hObject, eventdata, handles)
 % hObject    handle to treinstart (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+NumberNeurons = get(handles.Numberneuronsinput, 'Value');
+net = feedforwardnet(NumberNeurons);
+net.layers{1}.transferFcn = 'tansig'; % temppp <- meter com as layers
+
+%------------- trainfcn-----
+allItems = get(handles.functreino,'string');
+selectedIndex = get(handles.functreino,'Value');
+selectedItem = allItems{selectedIndex};
+
+net.trainFcn = selectedItem; %trainscg (rapido, pouca ram); trainlm (recomandado, mas lento e pesado)->se trainlm obgrigatorio usar recize.
+%--------------------------
+net.trainparam.epochs=250; % nº de instances
+
+if get(handles.checkboxtype, 'Value')
+    net.divideFcn = ''; %topico A
+else
+    net.divideFcn = 'dividerand'; %topico B
+    net.divideParam.trainRatio = get(handles.trainRationum,'value');
+    net.divideParam.valRatio = get(handles.valRationum,'value');
+    net.divideParam.testRatio = get(handles.testRationum,'value');
+end
+
+if isempty(get(handles.functreino,'Value')) && isempty(get(handles.trainRationum,'Value')) && isempty(get(handles.valRationum,'Value')) && isempty(get(handles.testRationum,'Value'))
+    f = warndlg('Existem parametros não definidos','Warning');
+else
+    inputmatrix = getappdata(0,'sharedinputmatrix');
+    outputmatrix = getappdata(0,'sharedoutputmatrix');
+    
+    [net,tr] = train(net,inputmatrix,outputmatrix);
+
+    view(net);
+    disp(tr)
+end
 
 
 % --- Executes on button press in checkboxtype.

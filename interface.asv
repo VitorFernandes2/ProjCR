@@ -125,8 +125,187 @@ function createnewnet_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+intFolder = get(handles.pastaselect, 'Value');
+switch intFolder
+    case 1
+        Folder = 1; %pasta que se quer estudar as imagens
+    case 2
+        Folder = 2; %pasta que se quer estudar as imagens
+    case 3
+        Folder = 3; %pasta que se quer estudar as imagens
+end
 
+infRecize = get(handles.redimopcion, 'Value');
+switch infRecize
+    case 1
+        Recizevalue = 2; % 1 se normal, 2 se recized pra 20x20 (aumenta significativamente a velocidade e tirar bugs de ram)
+    case 2
+        Recizevalue = 1; % 1 se normal, 2 se recized pra 20x20 (aumenta significativamente a velocidade e tirar bugs de ram)
+end
 
+%--------------------------------------------------------
+%Consoante o folder escolhido , faz a "preparação" de variaveis necessarias para a leitura
+%--------------------------------------------------------
+switch Folder 
+    case 1 %Formas_1
+        NumberImagesFolder = 3;
+        outputmatrix = zeros(4,4);
+    case 2 %Formas_2
+        NumberImagesFolder = 3; % ante -> 200, agora 4 pq algoritmp alterado
+        outputmatrix = zeros(4,804);
+    case 3 %Formas_3
+        NumberImagesFolder = 3; % ante -> 250 agora 3
+        outputmatrix = zeros(4,200);
+end
+
+%--------------------------------------------------------
+%Conversão das imagens em Formas_1 em matrizes binárias
+%--------------------------------------------------------
+%outputmatrix= zeros(4,NumberImagesFolder - InicialCount + 1);
+            
+ for i = 0:NumberImagesFolder
+
+    ImageName = '';
+    
+    switch Folder  %verifica qual a pasta que estamos a analisar
+       
+        case 1 %Formas_1
+            
+            ImageName = sprintf('Formas_1\\%d.png', i);
+            Img = imread(ImageName);
+            Img = imbinarize(Img);
+            if Recizevalue == 2
+                Img = imresize(Img, 0.1); % temp
+                inputmatrix(1:400,i+1)=Img(:); % matrix de input de informação pra rede neuronal 
+            else
+                inputmatrix(1:40000,i+1)=Img(:); % matrix de input de informação pra rede neuronal 
+            end          
+            outputmatrix(i+1,i+1)=1;
+            
+        case 2 %Formas_2
+            
+            switch i
+                case 0
+                    for j = 0:200
+                        ImageName = sprintf('Formas_2\\circle\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j+1)=Img(:); 
+                        else
+                            inputmatrix(1:40000,j+1)=Img(:);
+                        end   
+                        outputmatrix(1,j+1)=1;
+                    end
+                case 1  
+                    for j = 0:200
+                        ImageName = sprintf('Formas_2\\square\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j+1 + 201)=Img(:);
+                        else
+                            inputmatrix(1:40000,j+1 + 201)=Img(:);
+                        end   
+                        outputmatrix(2,j+1 + 201)=1;
+                    end
+                case 2  
+                    for j = 0:200
+                        ImageName = sprintf('Formas_2\\star\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j+1 + 402)=Img(:);
+                        else
+                            inputmatrix(1:40000,j+1 + 402)=Img(:);
+                        end
+                        outputmatrix(3,j+1 + 402)=1;
+                    end
+                case 3
+                    for j = 0:200
+                        ImageName = sprintf('Formas_2\\triangle\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j+1 + 603)=Img(:);
+                        else
+                            inputmatrix(1:40000,j+1 + 603)=Img(:);
+                        end
+                        outputmatrix(4,j+1 + 603)=1;
+                    end
+            end
+                   
+        case 3 %Formas_3
+           
+            switch i
+                case 0
+                    for j = 201:250
+                        ImageName = sprintf('Formas_3\\circle\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j-200)=Img(:);
+                        else
+                            inputmatrix(1:40000,j-200)=Img(:);
+                        end
+                        outputmatrix(1,j-200)=1;
+                    end
+                case 1  
+                    for j = 201:250
+                        ImageName = sprintf('Formas_3\\square\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j-200 +50)=Img(:);
+                        else
+                            inputmatrix(1:40000,j-200 +50)=Img(:);
+                        end
+                        outputmatrix(2,j-200 +50)=1;
+                    end
+                case 2  
+                    for j = 201:250
+                        ImageName = sprintf('Formas_3\\star\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j-200 +100)=Img(:);
+                        else
+                            inputmatrix(1:40000,j-200 +100)=Img(:);
+                        end
+                        outputmatrix(3,j-200 +100)=1;
+                    end
+                case 3
+                    for j = 201:250
+                        ImageName = sprintf('Formas_3\\triangle\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j-200 +150)=Img(:);
+                        else
+                            inputmatrix(1:40000,j-200 +150)=Img(:);
+                        end
+                        outputmatrix(4,j-200 +150)=1;
+                    end
+            end
+            
+            
+    end
+    
+ end
+
+setappdata(0,'sharedinputmatrix',inputmatrix);
+setappdata(0,'sharedoutputmatrix',outputmatrix);
+setappdata(0,'sharedRecizevalue',Recizevalue);
+
+set(handles.createnetconfirm, 'string', 'Rede preparada');
 
 
 % --- Executes on selection change in functreino.
@@ -170,6 +349,37 @@ function drawimg_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+Numimagenscomp = 4; % TEMPPP -> numero de imagens lidas pra comparar -> definido para as 4 de imagensleitura
+Recizevalue = getappdata(0,'sharedRecizevalue');
+if(isempty(Recizevalue))
+    infRecize = get(handles.redimopcion, 'Value');
+    switch infRecize
+        case 1
+            Recizevalue = 2; % 1 se normal, 2 se recized pra 20x20 (aumenta significativamente a velocidade e tirar bugs de ram)
+        case 2
+            Recizevalue = 1; % 1 se normal, 2 se recized pra 20x20 (aumenta significativamente a velocidade e tirar bugs de ram)
+    end
+end
+
+for i=1:Numimagenscomp
+   
+    ImageName = sprintf('ImagensLeitura\\%d.png', i - 1);
+    Img = imread(ImageName);
+    Img = imbinarize(Img);
+    
+    if Recizevalue == 2
+        Img = imresize(Img, 0.1); % temp
+        SimulationMatrix(1:400,i)=Img(:); % matrix onde esta os objetos q serão testados
+    else
+        SimulationMatrix(1:40000,i)=Img(:); % matrix onde esta os objetos q serão testados
+    end 
+
+
+end
+setappdata(0,'sharedSimulationMatrix',SimulationMatrix);
+
+set(handles.statusimg, 'string', 'Ims default carregadas');
+
 
 % --- Executes on button press in runbtn.
 function runbtn_Callback(hObject, eventdata, handles)
@@ -190,7 +400,12 @@ function loadneubut_Callback(hObject, eventdata, handles)
 % hObject    handle to loadneubut (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+[file,path] = uigetfile('*.mat');
+if isequal(file,0)
+   disp('User selected Cancel');
+else
+   disp(['User selected ', fullfile(path,file)]);
+end
 
 % --- Executes on button press in saveresult.
 function saveresult_Callback(hObject, eventdata, handles)
@@ -296,6 +511,39 @@ function treinstart_Callback(hObject, eventdata, handles)
 % hObject    handle to treinstart (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+NumberNeurons = get(handles.Numberneuronsinput, 'Value');
+net = feedforwardnet(NumberNeurons);
+net.layers{1}.transferFcn = 'tansig'; % temppp <- meter com as layers
+
+%------------- trainfcn-----
+allItems = get(handles.functreino,'string');
+selectedIndex = get(handles.functreino,'Value');
+selectedItem = allItems{selectedIndex};
+
+net.trainFcn = selectedItem; %trainscg (rapido, pouca ram); trainlm (recomandado, mas lento e pesado)->se trainlm obgrigatorio usar recize.
+%--------------------------
+net.trainparam.epochs=250; % nº de instances
+
+if get(handles.checkboxtype, 'Value')
+    net.divideFcn = ''; %topico A
+else
+    net.divideFcn = 'dividerand'; %topico B
+    net.divideParam.trainRatio = get(handles.trainRationum,'value');
+    net.divideParam.valRatio = get(handles.valRationum,'value');
+    net.divideParam.testRatio = get(handles.testRationum,'value');
+end
+
+if isempty(get(handles.functreino,'Value')) && isempty(get(handles.trainRationum,'Value')) && isempty(get(handles.valRationum,'Value')) && isempty(get(handles.testRationum,'Value'))
+    f = warndlg('Existem parametros não definidos','Warning');
+else
+    inputmatrix = getappdata(0,'sharedinputmatrix');
+    outputmatrix = getappdata(0,'sharedRecizevalue');
+    
+    [net,tr] = train(net,inputmatrix,outputmatrix);
+
+    view(net);
+    disp(tr)
+end
 
 
 % --- Executes on button press in checkboxtype.
