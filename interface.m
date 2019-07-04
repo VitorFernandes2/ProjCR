@@ -154,7 +154,12 @@ function selectimg_Callback(hObject, eventdata, handles)
 % hObject    handle to selectimg (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+[file,path] = uigetfile({'*.m'; '*.png'});
+if isequal(file,0)
+   disp('User selected Cancel');
+else
+   disp(['User selected ', fullfile(path,file)]);
+end
 
 % --- Executes on button press in drawimg.
 function drawimg_Callback(hObject, eventdata, handles)
@@ -295,7 +300,16 @@ function checkboxtype_Callback(hObject, eventdata, handles)
 % hObject    handle to checkboxtype (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+    if get(hObject,'Value') == 1
+        set(handles.trainRationum, 'enable', 'off');
+        set(handles.valRationum, 'enable', 'off');
+        set(handles.testRationum, 'enable', 'off');
+    else
+        set(handles.trainRationum, 'enable', 'on');
+        set(handles.valRationum, 'enable', 'on');
+        set(handles.testRationum, 'enable', 'on');
 
+    end
 % Hint: get(hObject,'Value') returns toggle state of checkboxtype
 
 

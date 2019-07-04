@@ -4,7 +4,7 @@ clc;
 NumberLayers = 1; %número de camadas de neurónios
 NumberNeurons = 10; %número de neurónios por camada
 
-Folder = 1; %pasta que se quer estudar as imagens
+Folder = 2; %pasta que se quer estudar as imagens
 InicialCount = 0; %número da primeira imagem da pasta
 NumberImagesFolder = 0; %número da ultima imagem da pasta
 
@@ -79,7 +79,12 @@ end
                         ImageName = sprintf('Formas_2\\square\\%d.png', j);
                         Img = imread(ImageName);
                         Img = imbinarize(Img);
-                        inputmatrix(1:40000,j+1 + 201)=Img(:);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j+1 + 201)=Img(:);
+                        else
+                            inputmatrix(1:40000,j+1 + 201)=Img(:);
+                        end   
                         outputmatrix(2,j+1 + 201)=1;
                     end
                 case 2  
@@ -87,7 +92,12 @@ end
                         ImageName = sprintf('Formas_2\\star\\%d.png', j);
                         Img = imread(ImageName);
                         Img = imbinarize(Img);
-                        inputmatrix(1:40000,j+1 + 402)=Img(:);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j+1 + 402)=Img(:);
+                        else
+                            inputmatrix(1:40000,j+1 + 402)=Img(:);
+                        end
                         outputmatrix(3,j+1 + 402)=1;
                     end
                 case 3
@@ -95,7 +105,12 @@ end
                         ImageName = sprintf('Formas_2\\triangle\\%d.png', j);
                         Img = imread(ImageName);
                         Img = imbinarize(Img);
-                        inputmatrix(1:40000,j+1 + 603)=Img(:);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j+1 + 603)=Img(:);
+                        else
+                            inputmatrix(1:40000,j+1 + 603)=Img(:);
+                        end
                         outputmatrix(4,j+1 + 603)=1;
                     end
             end
@@ -108,7 +123,12 @@ end
                         ImageName = sprintf('Formas_3\\circle\\%d.png', j);
                         Img = imread(ImageName);
                         Img = imbinarize(Img);
-                        inputmatrix(1:40000,j-200)=Img(:);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j-200)=Img(:);
+                        else
+                            inputmatrix(1:40000,j-200)=Img(:);
+                        end
                         outputmatrix(1,j-200)=1;
                     end
                 case 1  
@@ -116,7 +136,12 @@ end
                         ImageName = sprintf('Formas_3\\square\\%d.png', j);
                         Img = imread(ImageName);
                         Img = imbinarize(Img);
-                        inputmatrix(1:40000,j-200 +50)=Img(:);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j-200 +50)=Img(:);
+                        else
+                            inputmatrix(1:40000,j-200 +50)=Img(:);
+                        end
                         outputmatrix(2,j-200 +50)=1;
                     end
                 case 2  
@@ -124,7 +149,12 @@ end
                         ImageName = sprintf('Formas_3\\star\\%d.png', j);
                         Img = imread(ImageName);
                         Img = imbinarize(Img);
-                        inputmatrix(1:40000,j-200 +100)=Img(:);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j-200 +100)=Img(:);
+                        else
+                            inputmatrix(1:40000,j-200 +100)=Img(:);
+                        end
                         outputmatrix(3,j-200 +100)=1;
                     end
                 case 3
@@ -132,7 +162,12 @@ end
                         ImageName = sprintf('Formas_3\\triangle\\%d.png', j);
                         Img = imread(ImageName);
                         Img = imbinarize(Img);
-                        inputmatrix(1:40000,j-200 +150)=Img(:);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j-200 +150)=Img(:);
+                        else
+                            inputmatrix(1:40000,j-200 +150)=Img(:);
+                        end
                         outputmatrix(4,j-200 +150)=1;
                     end
             end
@@ -141,10 +176,6 @@ end
     end
     
  end
- 
- %inputmatrix = recize(Img,20,inputmatrix);
- 
- %SimulationMatrix = zeros(NumInputs, 4);
 
 for i=1:Numimagenscomp
    
@@ -181,8 +212,8 @@ net = feedforwardnet(NumberNeurons);
 net.layers{1}.transferFcn = 'tansig';
 %net.layers{2}.transferFcn = 'tansig';
 
-net.trainFcn = 'trainscg';
-net.trainparam.epochs=250;
+net.trainFcn = 'trainlm'; %trainscg (rapido, pouca ram); trainlm (recomandado, mas lento e pesado)->se trainlm obgrigatorio usar recize.
+net.trainparam.epochs=250; % nº de instances
 net.divideFcn = ''; %topico A
 
 % topico B \/
