@@ -61,6 +61,20 @@ guidata(hObject, handles);
 % UIWAIT makes interface wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
+%----------- Apaga data que possa ter ficado em memoria no uso anterior---
+if isappdata(0,'sharedinputmatrix')
+    rmappdata(0,'sharedinputmatrix');
+end
+if isappdata(0,'sharedoutputmatrix')
+    rmappdata(0,'sharedoutputmatrix');
+end
+if isappdata(0,'sharedRecizevalue')
+    rmappdata(0,'sharedRecizevalue');
+end
+if isappdata(0,'sharedSimulationMatrix')
+    rmappdata(0,'sharedSimulationMatrix');
+end
+
 
 % --- Outputs from this function are returned to the command line.
 function varargout = interface_OutputFcn(hObject, eventdata, handles) 
@@ -101,7 +115,12 @@ function Numberneuronsinput_Callback(hObject, eventdata, handles)
 % hObject    handle to Numberneuronsinput (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+if isnan(str2double(get(handles.Numberneuronsinput,'string')))
+    set(handles.Numberneuronsinput, 'string', '0');
+end
+if str2double(get(handles.Numberneuronsinput,'string')) < 0
+    set(handles.Numberneuronsinput, 'string', '0');
+end
 % Hints: get(hObject,'String') returns contents of Numberneuronsinput as text
 %        str2double(get(hObject,'String')) returns contents of Numberneuronsinput as a double
 
@@ -306,6 +325,7 @@ setappdata(0,'sharedoutputmatrix',outputmatrix);
 setappdata(0,'sharedRecizevalue',Recizevalue);
 
 set(handles.createnetconfirm, 'string', 'Rede preparada');
+set(handles.createnetconfirm, 'ForegroundColor', [0 0.6 0.1]);
 
 
 % --- Executes on selection change in functreino.
@@ -379,6 +399,7 @@ end
 setappdata(0,'sharedSimulationMatrix',SimulationMatrix);
 
 set(handles.statusimg, 'string', 'Ims default carregadas');
+set(handles.statusimg, 'ForegroundColor', [0 0.6 0.1]);
 
 
 % --- Executes on button press in runbtn.
@@ -386,7 +407,12 @@ function runbtn_Callback(hObject, eventdata, handles)
 % hObject    handle to runbtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+SimulationMatrix = getappdata(0,'sharedSimulationMatrix');
+net = getappdata(0,'sharednet');
 
+out = sim(net, SimulationMatrix);
+
+set(handles.uitable1 ,'Data' ,out);
 
 % --- Executes on button press in saveneubut.
 function saveneubut_Callback(hObject, eventdata, handles)
@@ -419,6 +445,15 @@ function trainRationum_Callback(hObject, eventdata, handles)
 % hObject    handle to trainRationum (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+if isnan(str2double(get(handles.trainRationum,'string')))
+    set(handles.trainRationum, 'string', '0');
+end
+if str2double(get(handles.trainRationum,'string')) < 0
+    set(handles.trainRationum, 'string', '0');
+end
+if str2double(get(handles.trainRationum,'string')) > 100
+    set(handles.trainRationum, 'string', '0');
+end
 
 % Hints: get(hObject,'String') returns contents of trainRationum as text
 %        str2double(get(hObject,'String')) returns contents of trainRationum as a double
@@ -442,6 +477,15 @@ function valRationum_Callback(hObject, eventdata, handles)
 % hObject    handle to valRationum (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+if isnan(str2double(get(handles.valRationum,'string')))
+    set(handles.valRationum, 'string', '0');
+end
+if str2double(get(handles.valRationum,'string')) < 0
+    set(handles.valRationum, 'string', '0');
+end
+if str2double(get(handles.valRationum,'string')) > 100
+    set(handles.valRationum, 'string', '0');
+end
 
 % Hints: get(hObject,'String') returns contents of valRationum as text
 %        str2double(get(hObject,'String')) returns contents of valRationum as a double
@@ -465,7 +509,15 @@ function testRationum_Callback(hObject, eventdata, handles)
 % hObject    handle to testRationum (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+if isnan(str2double(get(handles.testRationum,'string')))
+    set(handles.testRationum, 'string', '0');
+end
+if str2double(get(handles.testRationum,'string')) < 0
+    set(handles.testRationum, 'string', '0');
+end
+if str2double(get(handles.testRationum,'string')) > 100
+    set(handles.testRationum, 'string', '0');
+end
 % Hints: get(hObject,'String') returns contents of testRationum as text
 %        str2double(get(hObject,'String')) returns contents of testRationum as a double
 
@@ -511,7 +563,7 @@ function treinstart_Callback(hObject, eventdata, handles)
 % hObject    handle to treinstart (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-NumberNeurons = get(handles.Numberneuronsinput, 'Value');
+NumberNeurons = str2num(get(handles.Numberneuronsinput, 'string'));
 net = feedforwardnet(NumberNeurons);
 net.layers{1}.transferFcn = 'tansig'; % temppp <- meter com as layers
 
@@ -528,9 +580,10 @@ if get(handles.checkboxtype, 'Value')
     net.divideFcn = ''; %topico A
 else
     net.divideFcn = 'dividerand'; %topico B
-    net.divideParam.trainRatio = get(handles.trainRationum,'value');
-    net.divideParam.valRatio = get(handles.valRationum,'value');
-    net.divideParam.testRatio = get(handles.testRationum,'value');
+    a = str2double(get(handles.trainRationum,'string')) / 100;
+    net.divideParam.trainRatio = str2double(get(handles.trainRationum,'string'));
+    net.divideParam.valRatio = str2double(get(handles.valRationum,'string'));
+    net.divideParam.testRatio = str2double(get(handles.testRationum,'string'));
 end
 
 if isempty(get(handles.functreino,'Value')) && isempty(get(handles.trainRationum,'Value')) && isempty(get(handles.valRationum,'Value')) && isempty(get(handles.testRationum,'Value'))
@@ -541,8 +594,13 @@ else
     
     [net,tr] = train(net,inputmatrix,outputmatrix);
 
-    view(net);
-    disp(tr)
+    setappdata(0,'sharednet',net); % mete a net em "global"
+    
+    
+    set(handles.trainlabel, 'string', 'Treino realizado');
+    set(handles.trainlabel, 'ForegroundColor', [0 0.6 0.1]);
+    %view(net);
+    %disp(tr)
 end
 
 

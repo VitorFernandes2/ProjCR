@@ -212,17 +212,17 @@ net = feedforwardnet(NumberNeurons);
 net.layers{1}.transferFcn = 'tansig';
 %net.layers{2}.transferFcn = 'tansig';
 
-net.trainFcn = 'trainlm'; %trainscg (rapido, pouca ram); trainlm (recomandado, mas lento e pesado)->se trainlm obgrigatorio usar recize.
-net.trainparam.epochs=250; % nº de instances
-net.divideFcn = ''; %topico A
+net.trainFcn = 'trainscg'; %trainscg (rapido, pouca ram); trainlm (recomandado, mas lento e pesado)->se trainlm obgrigatorio usar recize.
+net.trainparam.epochs=1000; % nº de instances
+%net.divideFcn = ''; %topico A
 
 % topico B \/
-%{
+
 net.divideFcn = 'dividerand';
 net.divideParam.trainRatio = 0.7;
 net.divideParam.valRatio = 0.15;
 net.divideParam.testRatio = 0.15;
-%}
+
 
 
 
