@@ -8,11 +8,15 @@ Folder = 1; %pasta que se quer estudar as imagens
 InicialCount = 0; %número da primeira imagem da pasta
 NumberImagesFolder = 0; %número da ultima imagem da pasta
 
-NumInputs = 10; %número de entradas para o estudo das imagens
+%NumInputs = 10; %número de entradas para o estudo das imagens
 
 TargetShape = zeros(1,4); %variável que transporta as formas de cada imagem
 
-Numimagenscomp = 4 % TEMPPP -> numero de imagens lidas pra comparar
+Numimagenscomp = 4; % TEMPPP -> numero de imagens lidas pra comparar -> definido para as 4 de imagensleitura
+
+Recizevalue = 2; % 1 se normal, 2 se recized pra 20x20 (aumenta significativamente a velocidade e tirar bugs de ram)
+
+
 
 
 %--------------------------------------------------------
@@ -46,8 +50,12 @@ end
             ImageName = sprintf('Formas_1\\%d.png', i);
             Img = imread(ImageName);
             Img = imbinarize(Img);
-            inputmatrix(1:40000,i+1)=Img(:); % matrix de input de informação pra rede neuronal 
-                      
+            if Recizevalue == 2
+                Img = imresize(Img, 0.1); % temp
+                inputmatrix(1:400,i+1)=Img(:); % matrix de input de informação pra rede neuronal 
+            else
+                inputmatrix(1:40000,i+1)=Img(:); % matrix de input de informação pra rede neuronal 
+            end          
             outputmatrix(i+1,i+1)=1;
             
         case 2 %Formas_2
@@ -58,7 +66,12 @@ end
                         ImageName = sprintf('Formas_2\\circle\\%d.png', j);
                         Img = imread(ImageName);
                         Img = imbinarize(Img);
-                        inputmatrix(1:40000,j+1)=Img(:);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            inputmatrix(1:400,j+1)=Img(:); 
+                        else
+                            inputmatrix(1:40000,j+1)=Img(:);
+                        end   
                         outputmatrix(1,j+1)=1;
                     end
                 case 1  
@@ -129,6 +142,7 @@ end
     
  end
  
+ %inputmatrix = recize(Img,20,inputmatrix);
  
  %SimulationMatrix = zeros(NumInputs, 4);
 
@@ -137,7 +151,14 @@ for i=1:Numimagenscomp
     ImageName = sprintf('ImagensLeitura\\%d.png', i - 1);
     Img = imread(ImageName);
     Img = imbinarize(Img);
-    SimulationMatrix(1:40000,i)=Img(:); % matrix onde esta os objetos q serão testados
+    
+    if Recizevalue == 2
+        Img = imresize(Img, 0.1); % temp
+        SimulationMatrix(1:400,i)=Img(:); % matrix onde esta os objetos q serão testados
+    else
+        SimulationMatrix(1:40000,i)=Img(:); % matrix onde esta os objetos q serão testados
+    end 
+
 
 end
  
@@ -220,4 +241,3 @@ accuracy = r/size(out,2)*100;
 fprintf('Precisao total %.2f%%\n', accuracy)
 
 end
-

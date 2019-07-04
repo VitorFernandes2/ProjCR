@@ -4,11 +4,11 @@ clc;
 NumberLayers = 1; %número de camadas de neurónios
 NumberNeurons = 10; %número de neurónios por camada
 
-Folder = 2; %pasta que se quer estudar as imagens
+Folder = 1; %pasta que se quer estudar as imagens
 InicialCount = 0; %número da primeira imagem da pasta
 NumberImagesFolder = 0; %número da ultima imagem da pasta
 
-NumInputs = 10; %número de entradas para o estudo das imagens
+%NumInputs = 10; %número de entradas para o estudo das imagens
 
 TargetShape = zeros(1,4); %variável que transporta as formas de cada imagem
 
@@ -95,32 +95,32 @@ end
                         ImageName = sprintf('Formas_3\\circle\\%d.png', j);
                         Img = imread(ImageName);
                         Img = imbinarize(Img);
-                        inputmatrix(1:40000,j - 200)=Img(:);
-                        outputmatrix(1,j+1)=1;
+                        inputmatrix(1:40000,j-200)=Img(:);
+                        outputmatrix(1,j-200)=1;
                     end
                 case 1  
-                    for j = 0:200
-                        ImageName = sprintf('Formas_2\\square\\%d.png', j);
+                    for j = 201:250
+                        ImageName = sprintf('Formas_3\\square\\%d.png', j);
                         Img = imread(ImageName);
                         Img = imbinarize(Img);
-                        inputmatrix(1:40000,j+1 + 201)=Img(:);
-                        outputmatrix(2,j+1 + 201)=1;
+                        inputmatrix(1:40000,j-200 +50)=Img(:);
+                        outputmatrix(2,j-200 +50)=1;
                     end
                 case 2  
-                    for j = 0:200
-                        ImageName = sprintf('Formas_2\\star\\%d.png', j);
+                    for j = 201:250
+                        ImageName = sprintf('Formas_3\\star\\%d.png', j);
                         Img = imread(ImageName);
                         Img = imbinarize(Img);
-                        inputmatrix(1:40000,j+1 + 402)=Img(:);
-                        outputmatrix(3,j+1 + 402)=1;
+                        inputmatrix(1:40000,j-200 +100)=Img(:);
+                        outputmatrix(3,j-200 +100)=1;
                     end
                 case 3
-                    for j = 0:200
-                        ImageName = sprintf('Formas_2\\triangle\\%d.png', j);
+                    for j = 201:250
+                        ImageName = sprintf('Formas_3\\triangle\\%d.png', j);
                         Img = imread(ImageName);
                         Img = imbinarize(Img);
-                        inputmatrix(1:40000,j+1 + 603)=Img(:);
-                        outputmatrix(4,j+1 + 603)=1;
+                        inputmatrix(1:40000,j-200 +150)=Img(:);
+                        outputmatrix(4,j-200 +150)=1;
                     end
             end
             
@@ -129,6 +129,7 @@ end
     
  end
  
+ %inputmatrix = recize(Img,20,inputmatrix);
  
  %SimulationMatrix = zeros(NumInputs, 4);
 
@@ -161,7 +162,7 @@ net.layers{1}.transferFcn = 'tansig';
 %net.layers{2}.transferFcn = 'tansig';
 
 net.trainFcn = 'trainscg';
-
+net.trainparam.epochs=250;
 net.divideFcn = ''; %topico A
 
 % topico B \/
@@ -172,12 +173,20 @@ net.divideParam.valRatio = 0.15;
 net.divideParam.testRatio = 0.15;
 %}
 
+
+
 %Treinar
 %treina com os dados de entrada e com a matriz de objectivos
+
 [net,tr] = train(net,inputmatrix,outputmatrix);
 
 view(net);
 disp(tr)
+
+%{
+save -> save net
+load -> load net
+%}
 
 % SIMULAR
 %simula a rede neuronal treinada com os novos dados de entrada
@@ -212,4 +221,3 @@ accuracy = r/size(out,2)*100;
 fprintf('Precisao total %.2f%%\n', accuracy)
 
 end
-
