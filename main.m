@@ -4,7 +4,7 @@ clc;
 NumberLayers = 1; %número de camadas de neurónios
 NumberNeurons = 10; %número de neurónios por camada
 
-Folder = 2; %pasta que se quer estudar as imagens
+Folder = 3; %pasta que se quer estudar as imagens
 InicialCount = 0; %número da primeira imagem da pasta
 NumberImagesFolder = 0; %número da ultima imagem da pasta
 
@@ -211,18 +211,19 @@ net.layers{1}.transferFcn = 'tansig'; %função de ativação
 net = feedforwardnet(NumberNeurons);
 net.layers{1}.transferFcn = 'tansig';
 %net.layers{2}.transferFcn = 'tansig';
+%net.layers{3}.transferFcn = 'tansig'
 
 net.trainFcn = 'trainscg'; %trainscg (rapido, pouca ram); trainlm (recomandado, mas lento e pesado)->se trainlm obgrigatorio usar recize.
 net.trainparam.epochs=1000; % nº de instances
-%net.divideFcn = ''; %topico A
+net.divideFcn = ''; %topico A
 
 % topico B \/
-
+%{
 net.divideFcn = 'dividerand';
 net.divideParam.trainRatio = 0.7;
 net.divideParam.valRatio = 0.15;
 net.divideParam.testRatio = 0.15;
-
+%}
 
 
 

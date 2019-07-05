@@ -74,6 +74,9 @@ end
 if isappdata(0,'sharedSimulationMatrix')
     rmappdata(0,'sharedSimulationMatrix');
 end
+if isappdata(0,'sharednet')
+    rmappdata(0,'sharednet');    
+end
 
 
 % --- Outputs from this function are returned to the command line.
@@ -414,11 +417,31 @@ out = sim(net, SimulationMatrix);
 
 set(handles.uitable1 ,'Data' ,out);
 
+
+
+outputresulmatrix= zeros(4,4); % ultimo valor do (,este) mudar consuanto o no de imagens q são lidas
+for i=1:4   
+    outputresulmatrix(i,i)=1;
+end
+
+f1 = figure;
+plotconfusion(outputresulmatrix, out) % Matriz de confusao
+
+
+
+
 % --- Executes on button press in saveneubut.
 function saveneubut_Callback(hObject, eventdata, handles)
 % hObject    handle to saveneubut (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+if ~isappdata(0,'sharednet')
+    f = warndlg('Não existe um rede neuronal','Warning');
+else
+    save net;
+    f = msgbox('Rede neuronal guardada','Success');
+    %setappdata(0,'sharednet',net); % mete a net em "global" 
+end
 
 
 % --- Executes on button press in loadneubut.
