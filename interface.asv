@@ -325,6 +325,7 @@ setappdata(0,'sharedoutputmatrix',outputmatrix);
 setappdata(0,'sharedRecizevalue',Recizevalue);
 
 set(handles.createnetconfirm, 'string', 'Rede preparada');
+set(handles.createnetconfirm, 'ForegroundColor', [0 0.6 0.1]);
 
 
 % --- Executes on selection change in functreino.
@@ -398,6 +399,7 @@ end
 setappdata(0,'sharedSimulationMatrix',SimulationMatrix);
 
 set(handles.statusimg, 'string', 'Ims default carregadas');
+set(handles.statusimg, 'ForegroundColor', [0 0.6 0.1]);
 
 
 % --- Executes on button press in runbtn.
@@ -405,8 +407,12 @@ function runbtn_Callback(hObject, eventdata, handles)
 % hObject    handle to runbtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+SimulationMatrix = getappdata(0,'sharedSimulationMatrix');
+net = getappdata(0,'sharednet');
 
 out = sim(net, SimulationMatrix);
+
+set(handles.uitable1 ,'Data' ,out);
 
 % --- Executes on button press in saveneubut.
 function saveneubut_Callback(hObject, eventdata, handles)
@@ -448,7 +454,10 @@ end
 if str2double(get(handles.trainRationum,'string')) > 100
     set(handles.trainRationum, 'string', '0');
 end
-
+percTot = str2double(get(handles.trainRationum,'string')) + str2double(get(handles.valRationum,'string')) + str2double(get(handles.testRationum,'string'));
+if percTot > 100 || percTot < 0
+   set(handles.trainRationum, 'string', '0');
+end
 % Hints: get(hObject,'String') returns contents of trainRationum as text
 %        str2double(get(hObject,'String')) returns contents of trainRationum as a double
 
@@ -479,6 +488,12 @@ if str2double(get(handles.valRationum,'string')) < 0
 end
 if str2double(get(handles.valRationum,'string')) > 100
     set(handles.valRationum, 'string', '0');
+end
+percTot = str2double(get(handles.trainRationum,'string')) + str2double(get(handles.valRationum,'string')) + str2double(get(handles.testRationum,'string'));
+if percTot > 100 || percTot < 0
+   set(handles.trainRationum, 'string', '0');
+   set(handles.valRationum, 'string', '0');
+   set(handles.testRationum, 'string', '0');
 end
 
 % Hints: get(hObject,'String') returns contents of valRationum as text
@@ -588,6 +603,11 @@ else
     
     [net,tr] = train(net,inputmatrix,outputmatrix);
 
+    setappdata(0,'sharednet',net); % mete a net em "global"
+    
+    
+    set(handles.trainlabel, 'string', 'Treino realizado');
+    set(handles.trainlabel, 'ForegroundColor', [0 0.6 0.1]);
     %view(net);
     %disp(tr)
 end

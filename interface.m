@@ -454,7 +454,10 @@ end
 if str2double(get(handles.trainRationum,'string')) > 100
     set(handles.trainRationum, 'string', '0');
 end
-
+percTot = str2double(get(handles.trainRationum,'string')) + str2double(get(handles.valRationum,'string')) + str2double(get(handles.testRationum,'string'));
+if percTot > 100 || percTot < 0
+   set(handles.trainRationum, 'string', '0');
+end
 % Hints: get(hObject,'String') returns contents of trainRationum as text
 %        str2double(get(hObject,'String')) returns contents of trainRationum as a double
 
@@ -485,6 +488,10 @@ if str2double(get(handles.valRationum,'string')) < 0
 end
 if str2double(get(handles.valRationum,'string')) > 100
     set(handles.valRationum, 'string', '0');
+end
+percTot = str2double(get(handles.trainRationum,'string')) + str2double(get(handles.valRationum,'string')) + str2double(get(handles.testRationum,'string'));
+if percTot > 100 || percTot < 0
+   set(handles.valRationum, 'string', '0');
 end
 
 % Hints: get(hObject,'String') returns contents of valRationum as text
@@ -517,6 +524,10 @@ if str2double(get(handles.testRationum,'string')) < 0
 end
 if str2double(get(handles.testRationum,'string')) > 100
     set(handles.testRationum, 'string', '0');
+end
+percTot = str2double(get(handles.trainRationum,'string')) + str2double(get(handles.valRationum,'string')) + str2double(get(handles.testRationum,'string'));
+if percTot > 100 || percTot < 0
+   set(handles.testRationum, 'string', '0');
 end
 % Hints: get(hObject,'String') returns contents of testRationum as text
 %        str2double(get(hObject,'String')) returns contents of testRationum as a double
