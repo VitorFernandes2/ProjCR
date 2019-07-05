@@ -22,7 +22,7 @@ function varargout = interface(varargin)
 
 % Edit the above text to modify the response to help interface
 
-% Last Modified by GUIDE v2.5 04-Jul-2019 00:29:23
+% Last Modified by GUIDE v2.5 05-Jul-2019 02:26:34
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -76,6 +76,9 @@ if isappdata(0,'sharedSimulationMatrix')
 end
 if isappdata(0,'sharednet')
     rmappdata(0,'sharednet');    
+end
+if isappdata(0,'sharedtargetsim')
+    rmappdata(0,'sharedtargetsim'); 
 end
 
 
@@ -359,20 +362,8 @@ function selectimg_Callback(hObject, eventdata, handles)
 % hObject    handle to selectimg (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-[file,path] = uigetfile({'*.m'; '*.png'});
-if isequal(file,0)
-   disp('User selected Cancel');
-else
-   disp(['User selected ', fullfile(path,file)]);
-end
 
-% --- Executes on button press in drawimg.
-function drawimg_Callback(hObject, eventdata, handles)
-% hObject    handle to drawimg (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-Numimagenscomp = 4; % TEMPPP -> numero de imagens lidas pra comparar -> definido para as 4 de imagensleitura
 Recizevalue = getappdata(0,'sharedRecizevalue');
 if(isempty(Recizevalue))
     infRecize = get(handles.redimopcion, 'Value');
@@ -384,24 +375,214 @@ if(isempty(Recizevalue))
     end
 end
 
-for i=1:Numimagenscomp
-   
-    ImageName = sprintf('ImagensLeitura\\%d.png', i - 1);
+NumberImagesFolder = 1;
+
+option = 1;
+targetsim = zeros(4,NumberImagesFolder);
+
+
+[file,path] = uigetfile('*.png');
+if isequal(file,0)
+   disp('User selected Cancel');
+else
+  
+    i = 0;
+    ImageName = '';   
+    ImageName = strcat(path,file);
     Img = imread(ImageName);
     Img = imbinarize(Img);
-    
     if Recizevalue == 2
         Img = imresize(Img, 0.1); % temp
-        SimulationMatrix(1:400,i)=Img(:); % matrix onde esta os objetos q serão testados
+        SimulationMatrix(1:400,i+1)=Img(:); % matrix de input de informação pra rede neuronal 
     else
-        SimulationMatrix(1:40000,i)=Img(:); % matrix onde esta os objetos q serão testados
-    end 
+        SimulationMatrix(1:40000,i+1)=Img(:); % matrix de input de informação pra rede neuronal 
+    end
+    targetsim(i+1,i+1)=1;
 
+    setappdata(0,'sharedSimulationMatrix',SimulationMatrix);
+    setappdata(0,'sharedtargetsim',targetsim);
 
+    set(handles.statusimg, 'string', 'Img de util. carregada');
+    set(handles.statusimg, 'ForegroundColor', [0 0.6 0.1]);
 end
-setappdata(0,'sharedSimulationMatrix',SimulationMatrix);
 
-set(handles.statusimg, 'string', 'Ims default carregadas');
+
+% --- Executes on button press in drawimg.
+function drawimg_Callback(hObject, eventdata, handles)
+% hObject    handle to drawimg (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+Recizevalue = getappdata(0,'sharedRecizevalue');
+if(isempty(Recizevalue))
+    infRecize = get(handles.redimopcion, 'Value');
+    switch infRecize
+        case 1
+            Recizevalue = 2; % 1 se normal, 2 se recized pra 20x20 (aumenta significativamente a velocidade e tirar bugs de ram)
+        case 2
+            Recizevalue = 1; % 1 se normal, 2 se recized pra 20x20 (aumenta significativamente a velocidade e tirar bugs de ram)
+    end
+end
+
+NumberImagesFolder = 3;
+
+infRecize = get(handles.predimgs, 'Value');
+switch infRecize
+    case 1
+        option = 1;
+        targetsim = zeros(4,4);
+    case 2
+        option = 2;
+        targetsim = zeros(4,804);
+    case 3
+        option = 3;
+        targetsim = zeros(4,200);
+end
+
+%--------------------------------------------------------
+%Conversão das imagens em Formas_1 em matrizes binárias
+%--------------------------------------------------------
+%outputmatrix= zeros(4,NumberImagesFolder - InicialCount + 1);
+            
+ for i = 0:NumberImagesFolder
+
+    ImageName = '';
+    
+    switch option  %verifica qual a pasta que estamos a analisar
+       
+        case 1 %Formas_1
+            
+            ImageName = sprintf('Formas_1\\%d.png', i);
+            Img = imread(ImageName);
+            Img = imbinarize(Img);
+            if Recizevalue == 2
+                Img = imresize(Img, 0.1); % temp
+                SimulationMatrix(1:400,i+1)=Img(:); % matrix de input de informação pra rede neuronal 
+            else
+                SimulationMatrix(1:40000,i+1)=Img(:); % matrix de input de informação pra rede neuronal 
+            end          
+            targetsim(i+1,i+1)=1;
+            
+        case 2 %Formas_2
+            
+            switch i
+                case 0
+                    for j = 0:200
+                        ImageName = sprintf('Formas_2\\circle\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            SimulationMatrix(1:400,j+1)=Img(:); 
+                        else
+                            SimulationMatrix(1:40000,j+1)=Img(:);
+                        end
+                        targetsim(1,j+1)=1;
+                    end
+                case 1  
+                    for j = 0:200
+                        ImageName = sprintf('Formas_2\\square\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            SimulationMatrix(1:400,j+1 + 201)=Img(:);
+                        else
+                            SimulationMatrix(1:40000,j+1 + 201)=Img(:);
+                        end
+                        targetsim(2,j+1 + 201)=1;
+                    end
+                case 2  
+                    for j = 0:200
+                        ImageName = sprintf('Formas_2\\star\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            SimulationMatrix(1:400,j+1 + 402)=Img(:);
+                        else
+                            SimulationMatrix(1:40000,j+1 + 402)=Img(:);
+                        end
+                        targetsim(3,j+1 + 402)=1;
+                    end
+                case 3
+                    for j = 0:200
+                        ImageName = sprintf('Formas_2\\triangle\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            SimulationMatrix(1:400,j+1 + 603)=Img(:);
+                        else
+                            SimulationMatrix(1:40000,j+1 + 603)=Img(:);
+                        end
+                        targetsim(4,j+1 + 603)=1;
+                    end
+            end
+                   
+        case 3 %Formas_3
+           
+            switch i
+                case 0
+                    for j = 201:250
+                        ImageName = sprintf('Formas_3\\circle\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            SimulationMatrix(1:400,j-200)=Img(:);
+                        else
+                            SimulationMatrix(1:40000,j-200)=Img(:);
+                        end
+                        targetsim(1,j-200)=1;
+                    end
+                case 1  
+                    for j = 201:250
+                        ImageName = sprintf('Formas_3\\square\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            SimulationMatrix(1:400,j-200 +50)=Img(:);
+                        else
+                            SimulationMatrix(1:40000,j-200 +50)=Img(:);
+                        end
+                        targetsim(2,j-200 +50)=1;
+                    end
+                case 2  
+                    for j = 201:250
+                        ImageName = sprintf('Formas_3\\star\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            SimulationMatrix(1:400,j-200 +100)=Img(:);
+                        else
+                            SimulationMatrix(1:40000,j-200 +100)=Img(:);
+                        end
+                        targetsim(3,j-200 +100)=1;
+                    end
+                case 3
+                    for j = 201:250
+                        ImageName = sprintf('Formas_3\\triangle\\%d.png', j);
+                        Img = imread(ImageName);
+                        Img = imbinarize(Img);
+                        if Recizevalue == 2
+                            Img = imresize(Img, 0.1); % temp
+                            SimulationMatrix(1:400,j-200 +150)=Img(:);
+                        else
+                            SimulationMatrix(1:40000,j-200 +150)=Img(:);
+                        end
+                        targetsim(4,j-200 +150)=1;
+                    end
+            end     
+    end  
+ end
+
+setappdata(0,'sharedSimulationMatrix',SimulationMatrix);
+setappdata(0,'sharedtargetsim',targetsim);
+
+set(handles.statusimg, 'string', 'Imgs predef carregadas');
 set(handles.statusimg, 'ForegroundColor', [0 0.6 0.1]);
 
 
@@ -411,6 +592,7 @@ function runbtn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 SimulationMatrix = getappdata(0,'sharedSimulationMatrix');
+outputresulmatrix = getappdata(0,'sharedtargetsim');
 net = getappdata(0,'sharednet');
 
 out = sim(net, SimulationMatrix);
@@ -418,12 +600,12 @@ out = sim(net, SimulationMatrix);
 set(handles.uitable1 ,'Data' ,out);
 
 
-
+%{
 outputresulmatrix= zeros(4,4); % ultimo valor do (,este) mudar consuanto o no de imagens q são lidas
 for i=1:4   
     outputresulmatrix(i,i)=1;
 end
-
+%}
 f1 = figure;
 plotconfusion(outputresulmatrix, out) % Matriz de confusao
 
@@ -438,9 +620,18 @@ function saveneubut_Callback(hObject, eventdata, handles)
 if ~isappdata(0,'sharednet')
     f = warndlg('Não existe um rede neuronal','Warning');
 else
-    save net;
-    f = msgbox('Rede neuronal guardada','Success');
-    %setappdata(0,'sharednet',net); % mete a net em "global" 
+    net = getappdata(0,'sharednet');
+    %save net;
+    [file,path] = uiputfile('*.mat');
+    if isequal(file,0)
+        f = msgbox('Escolha cancelada','Erro');
+    else
+        output = strcat(path,file);
+        out = net;
+        save(output,'out');
+        f = msgbox('Rede neuronal guardada','Success');
+        %setappdata(0,'sharednet',net); % mete a net em "global" 
+    end
 end
 
 
@@ -449,18 +640,49 @@ function loadneubut_Callback(hObject, eventdata, handles)
 % hObject    handle to loadneubut (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+    %net = getappdata(0,'sharednet');
+    %load net;
+    %setappdata(0,'sharednet',net); % mete a net em "global" 
+    
+    [file,path] = uigetfile('*.mat');
+    if isequal(file,0)
+        f = msgbox('Escolha cancelada','Erro');
+    else
+       intput = strcat(path,file);
+        %out = net;
+        out = load(intput);
+        net = out.out;
+        setappdata(0,'sharednet',net); % mete a net em "global" 
+        f = msgbox('Rede neuronal lida com sucesso','Successo');
+        
+        set(handles.createnetconfirm, 'string', 'Rede preparada');
+        set(handles.createnetconfirm, 'ForegroundColor', [0 0.6 0.1]);
+        
+        set(handles.trainlabel, 'string', 'Treino carregado');
+        set(handles.trainlabel, 'ForegroundColor', [0 0.6 0.1]);
+    end
+
+
+%{
 [file,path] = uigetfile('*.mat');
 if isequal(file,0)
    disp('User selected Cancel');
 else
    disp(['User selected ', fullfile(path,file)]);
 end
+%}
 
 % --- Executes on button press in saveresult.
 function saveresult_Callback(hObject, eventdata, handles)
 % hObject    handle to saveresult (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+table = get(handles.uitable1,'Data');
+xlswrite('output.xlsx',table);
+f = msgbox('Ficheiro exel guardado na diretoria do programa','Sucesso');
+
 
 
 
@@ -598,8 +820,28 @@ function treinstart_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 NumberNeurons = str2num(get(handles.Numberneuronsinput, 'string'));
-net = feedforwardnet(NumberNeurons);
-net.layers{1}.transferFcn = 'tansig'; % temppp <- meter com as layers
+inflayer = get(handles.layerconf, 'Value');
+switch inflayer
+    case 1
+        net = feedforwardnet(NumberNeurons);
+        net.layers{1}.transferFcn = 'tansig'; 
+    case 2
+        net = feedforwardnet(NumberNeurons);
+        net.layers{1}.transferFcn = 'logsig';
+    case 3
+        net = feedforwardnet(NumberNeurons);
+        net.layers{1}.transferFcn = 'purelin'; 
+    case 4
+        net = feedforwardnet([NumberNeurons NumberNeurons NumberNeurons]);
+        net.layers{1}.transferFcn = 'tansig'; 
+        net.layers{2}.transferFcn = 'tansig';
+        net.layers{3}.transferFcn = 'tansig'; 
+    case 5
+        net = feedforwardnet([NumberNeurons NumberNeurons NumberNeurons]);
+        net.layers{1}.transferFcn = 'tansig'; 
+        net.layers{2}.transferFcn = 'logsig'; 
+        net.layers{3}.transferFcn = 'purelin'; 
+end
 
 %------------- trainfcn-----
 allItems = get(handles.functreino,'string');
@@ -610,7 +852,7 @@ net.trainFcn = selectedItem; %trainscg (rapido, pouca ram); trainlm (recomandado
 %--------------------------
 net.trainparam.epochs=250; % nº de instances
 
-if get(handles.checkboxtype, 'Value')
+if ~get(handles.checkboxtype, 'Value')
     net.divideFcn = ''; %topico A
 else
     net.divideFcn = 'dividerand'; %topico B
@@ -620,9 +862,6 @@ else
     net.divideParam.testRatio = str2double(get(handles.testRationum,'string'));
 end
 
-if isempty(get(handles.functreino,'Value')) && isempty(get(handles.trainRationum,'Value')) && isempty(get(handles.valRationum,'Value')) && isempty(get(handles.testRationum,'Value'))
-    f = warndlg('Existem parametros não definidos','Warning');
-else
     inputmatrix = getappdata(0,'sharedinputmatrix');
     outputmatrix = getappdata(0,'sharedoutputmatrix');
     
@@ -635,7 +874,7 @@ else
     set(handles.trainlabel, 'ForegroundColor', [0 0.6 0.1]);
     %view(net);
     %disp(tr)
-end
+
 
 
 % --- Executes on button press in checkboxtype.
@@ -643,7 +882,7 @@ function checkboxtype_Callback(hObject, eventdata, handles)
 % hObject    handle to checkboxtype (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-    if get(hObject,'Value') == 1
+    if get(hObject,'Value') == 0
         set(handles.trainRationum, 'enable', 'off');
         set(handles.valRationum, 'enable', 'off');
         set(handles.testRationum, 'enable', 'off');
@@ -669,6 +908,52 @@ function redimopcion_Callback(hObject, eventdata, handles)
 % --- Executes during object creation, after setting all properties.
 function redimopcion_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to redimopcion (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in predimgs.
+function predimgs_Callback(hObject, eventdata, handles)
+% hObject    handle to predimgs (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns predimgs contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from predimgs
+
+
+% --- Executes during object creation, after setting all properties.
+function predimgs_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to predimgs (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in layerconf.
+function layerconf_Callback(hObject, eventdata, handles)
+% hObject    handle to layerconf (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns layerconf contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from layerconf
+
+
+% --- Executes during object creation, after setting all properties.
+function layerconf_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to layerconf (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 

@@ -208,9 +208,9 @@ net.layers{1}.transferFcn = 'tansig'; %função de ativação
  
 %Criação da Rede Neuronal com NumberNeurons neurónios
 
-net = feedforwardnet(NumberNeurons);
+net = feedforwardnet([100 100]);
 net.layers{1}.transferFcn = 'tansig';
-%net.layers{2}.transferFcn = 'tansig';
+net.layers{2}.transferFcn = 'tansig';
 %net.layers{3}.transferFcn = 'tansig'
 
 net.trainFcn = 'trainscg'; %trainscg (rapido, pouca ram); trainlm (recomandado, mas lento e pesado)->se trainlm obgrigatorio usar recize.
